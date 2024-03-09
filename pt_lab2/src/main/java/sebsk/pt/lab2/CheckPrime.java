@@ -1,44 +1,27 @@
 package sebsk.pt.lab2;
 
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class CheckPrime implements Runnable {
-    static int[] historyOfCheckedPrimes;
-    private Queue<Integer> primesToCheck;
+    private final PrimesList checkPrime;
 
-    private Thread primeCheckerThread;
-
-    CheckPrime() {
-        this.primesToCheck = new LinkedList<>();
-        this.primeCheckerThread = new Thread(this);
-        this.primeCheckerThread.start();
+    public CheckPrime(PrimesList checkPrime) {
+        this.checkPrime = checkPrime;
     }
 
-    public Thread getPrimeCheckerThread() {
-        return primeCheckerThread;
-    }
     @Override
     public void run() {
-        while (!primeCheckerThread.isInterrupted()) {
+        for (int i = 0; i < 10; i++) {
+            int prime = checkPrime.getPrime();
+            System.out.println("[CHECK] IsPrime: " + prime + " : " + isPrime(prime));
+
             try {
-                Integer primeToCheck = getNextPrimeToCheck();
-                boolean isPrime = checkPrime(primeToCheck);
-                System.out.println(primeToCheck + " is prime: " + isPrime);
-                System.out.println("Size: " + primesToCheck.size());
+                Thread.sleep(2000); // Simulate some processing time before consuming the next prime
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                Thread.currentThread().interrupt();
             }
         }
     }
-    public boolean checkPrime(Integer number) {
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            Thread.currentThread().interrupt();
-        }
+    private boolean isPrime(int number) {
         if (number <= 1) {
             return false;
         }
@@ -49,24 +32,5 @@ public class CheckPrime implements Runnable {
             }
         }
         return true;
-    }
-
-    public synchronized void addPrimeToCheck(Integer number) {
-        System.out.println("Adding prime to check: " + number);
-        primesToCheck.add(number);
-        notify();
-    }
-    public void stopPrimeCheckerThread() {
-        primeCheckerThread.interrupt();
-    }
-    public boolean primesEmpty() {
-        return primesToCheck.isEmpty();
-    }
-
-    public synchronized Integer getNextPrimeToCheck() throws InterruptedException {
-        while (primesToCheck.isEmpty() && !primeCheckerThread.isInterrupted()) {
-            wait(); // Wait for a prime to be added.
-        }
-        return primesToCheck.poll();
     }
 }
