@@ -42,6 +42,7 @@ public class App {
 
             primeList.addPrime(Integer.parseInt(userInput));
         }
+        scanner.close();
 
     }
 }
