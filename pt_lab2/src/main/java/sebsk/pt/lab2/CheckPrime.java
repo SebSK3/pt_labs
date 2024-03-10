@@ -1,29 +1,36 @@
 package sebsk.pt.lab2;
 
+import java.util.Random;
 
 public class CheckPrime implements Runnable {
     private final PrimesList checkPrime;
+    private final ResultPrimes results;
     private final String name;
 
-    public CheckPrime(PrimesList checkPrime, String name) {
+    public CheckPrime(PrimesList checkPrime, ResultPrimes results, String name) {
         this.checkPrime = checkPrime;
         this.name = name;
+        this.results = results;
     }
 
     @Override
     public void run() {
         for (int i = 0; i < 10; i++) {
-            int prime = checkPrime.getPrime();
-            System.out.println("[CHECK] " + name + ": " + prime + " : " + isPrime(prime));
-
+            Random random = new Random();
             try {
-                Thread.sleep(2500); // Simulate some processing time before consuming the next prime
+                Thread.sleep(random.nextInt(4001)+1000); // Simulate some processing time before consuming the next prime
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            int prime = checkPrime.getPrime();
+            boolean isPrime = checkPrime(prime);
+            System.out.println("[CHECK] " + name + ": " + prime + " : " + isPrime);
+            if (isPrime) {
+                results.addResult(prime);
+            }
         }
     }
-    private boolean isPrime(int number) {
+    private boolean checkPrime(int number) {
         if (number <= 1) {
             return false;
         }
