@@ -3,7 +3,6 @@ package sebsk.pt.lab3;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 
 public class ServerHandler implements Runnable {

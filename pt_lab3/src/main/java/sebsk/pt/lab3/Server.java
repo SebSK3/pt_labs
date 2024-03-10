@@ -13,19 +13,20 @@ public class Server {
         List<Thread> connections = new LinkedList<>();
         int clientNumber = 0;
         try {
-            ServerSocket serverSocket = new ServerSocket(PORT);
-            System.out.println("Listening on port:" + PORT);
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                Thread clientHandler = new Thread(new ServerHandler(clientSocket, clientNumber));
-                clientHandler.start();
-                connections.add(clientHandler);
-                clientNumber++;
+            try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+                System.out.println("Listening on port:" + PORT);
+                while (true) {
+                    Socket clientSocket = serverSocket.accept();
+                    Thread clientHandler = new Thread(new ServerHandler(clientSocket, clientNumber));
+                    clientHandler.start();
+                    connections.add(clientHandler);
+                    clientNumber++;
+                }
             }
-            //serverSocket.close();
 
 
        } catch (IOException e) {
+
            e.printStackTrace();
        }
     }
