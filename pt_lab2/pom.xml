@@ -54,7 +54,7 @@
             <configuration>
                 <archive>
                     <manifest>
-                        <mainClass>sebsk.pt.lab2</mainClass>
+                        <mainClass>sebsk.pt.lab2.App</mainClass>
                     </manifest>
                 </archive>
             </configuration>

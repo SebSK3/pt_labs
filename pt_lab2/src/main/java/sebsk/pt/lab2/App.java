@@ -1,40 +1,46 @@
 package sebsk.pt.lab2;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
+        int countersToStart = 1;
+        for (int i=0; i<args.length; i++) {
+            countersToStart = Integer.parseInt(args[i]);
+        }
         PrimesList primeList = new PrimesList();
         ResultPrimes results = new ResultPrimes();
 
-        // Zad. 1
-        Thread addPrime = new Thread(new AddPrime(primeList));
-        Thread checkPrime = new Thread(new CheckPrime(primeList, results, "first"));
-        Thread checkPrime2 = new Thread(new CheckPrime(primeList, results, "second"));
+        // Zad. 1, 3, 4
+        // Thread addPrime = new Thread(new AddPrime(primeList));
+        // addPrime.start();
+        List<Thread> calculators = new LinkedList<>();
+        for (int i=0; i<countersToStart; i++) {
+            Thread checkPrime = new Thread(new CheckPrime(primeList, results, "Counter" + i));
+            checkPrime.start();
+            calculators.add(checkPrime);
+        }
 
-        checkPrime.start();
-        addPrime.start();
-        checkPrime2.start();
+        // Zad. 2 (printing results)
+        Thread printer = new Thread(new Printer(results));
+        printer.start();
 
-        // Zad. 2
-        List<Integer> list;
-        List<Integer> lastList = results.getResults();
-        try {
-
-            while (true) {
-                Thread.sleep(5500);
-                list = results.getResults();
-                if (list.equals(lastList)) {
-                    System.out.println("Last list was the same. Size: " + list.size());
-                    continue;
+        // Zad. 4 (user input)
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            String userInput = scanner.nextLine();
+            // Zad 5. (graceful exit)
+            if (userInput.equals("x")) {
+                for (Thread calculatorThread : calculators) {
+                    calculatorThread.interrupt();
                 }
-                for (int i = 0; i < list.size(); i++) {
-                    System.out.println("Result " + i + " prime: " + list.get(i));
-                }
-                lastList = list;
+                printer.interrupt();
+                break;
             }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+            primeList.addPrime(Integer.parseInt(userInput));
         }
 
     }

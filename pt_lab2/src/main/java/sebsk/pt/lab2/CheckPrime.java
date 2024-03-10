@@ -15,19 +15,24 @@ public class CheckPrime implements Runnable {
 
     @Override
     public void run() {
-        for (int i = 0; i < 10; i++) {
-            Random random = new Random();
+        while (true) {
             try {
-                Thread.sleep(random.nextInt(4001)+1000); // Simulate some processing time before consuming the next prime
+                int prime = checkPrime.getPrime();
+                Random random = new Random();
+                try {
+                    Thread.sleep(random.nextInt(4001)+1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                boolean isPrime = checkPrime(prime);
+                System.out.println("[CHECK] " + name + ": " + prime + " : " + isPrime);
+                if (isPrime) {
+                    results.addResult(prime);
+                }
             } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            int prime = checkPrime.getPrime();
-            boolean isPrime = checkPrime(prime);
-            System.out.println("[CHECK] " + name + ": " + prime + " : " + isPrime);
-            if (isPrime) {
-                results.addResult(prime);
-            }
+                System.out.println("Shutting down checker: " + name);
+                break;
+        }
         }
     }
     private boolean checkPrime(int number) {
