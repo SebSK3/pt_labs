@@ -1,6 +1,7 @@
 package sebsk.pt.lab4;
 import java.util.List;
 
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -70,6 +71,38 @@ public class Database {
         session.delete(tower);
         session.getTransaction().commit();
     }
+
+    public List<Mage> getMagesAboveLevel(int level) {
+        Session session = factory.getCurrentSession();
+        session.beginTransaction();
+        Query<Mage> query = session.createQuery("FROM Mage WHERE level > :level", Mage.class);
+        query.setParameter("level", level);
+        List<Mage> mages = query.getResultList();
+        session.getTransaction().commit();
+        return mages;
+    }
+
+    public List<Tower> getTowersBelowHeight(int height) {
+        Session session = factory.getCurrentSession();
+        session.beginTransaction();
+        Query<Tower> query = session.createQuery("FROM Tower WHERE height < :height", Tower.class);
+        query.setParameter("height", height);
+        List<Tower> towers = query.getResultList();
+        session.getTransaction().commit();
+        return towers;
+    }
+
+    public List<Mage> getMagesAboveLevelFromTower(int level, Tower tower) {
+        Session session = factory.getCurrentSession();
+        session.beginTransaction();
+        Query<Mage> query = session.createQuery("FROM Mage WHERE level > :level and tower = :tower", Mage.class);
+        query.setParameter("level", level);
+        query.setParameter("tower", tower);
+        List<Mage> mages = query.getResultList();
+        session.getTransaction().commit();
+        return mages;
+    }
+
 
     public void dumpDatabase() {
         Session session = factory.getCurrentSession();
