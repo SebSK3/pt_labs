@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 public class App {
     public static void main(String[] args) {
-        int threads = 1;
+        int threads = 4;
         if (args.length == 0) {
             System.out.println("no number of threads provided");
         } else {
@@ -40,29 +40,17 @@ public class App {
         try {
 
             threadPool.submit(() ->
-                    files.parallelStream()
-                            .map(path -> {
-                                try {
-                                    BufferedImage image = ImageIO.read(path.toFile());
-                                    return Pair.of(path.getFileName().toString(), image);
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            })
-                            .map(pair -> {
-                                BufferedImage original = pair.getRight();
-                                BufferedImage transformedImage = transform_image(original);
-
-
-                                return Pair.of(pair.getLeft(), transformedImage);
-                            })
-                            .forEach(pair -> {
-                                try {
-                                    ImageIO.write(pair.getRight(), "jpg", Path.of("pt_lab6/src/main/resources/out", pair.getLeft()).toFile());
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            })).get();
+files.parallelStream().forEach(path -> {
+        try {
+            BufferedImage image = ImageIO.read(path.toFile());
+            BufferedImage transformedImage = transform_image(image);
+            String fileName = path.getFileName().toString();
+            Path outputPath = Path.of("pt_lab6/src/main/resources/out", fileName);
+            ImageIO.write(transformedImage, "jpg", outputPath.toFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        })).get();
         } catch (InterruptedException | ExecutionException e) {
             threadPool.close();
             throw new RuntimeException(e);
