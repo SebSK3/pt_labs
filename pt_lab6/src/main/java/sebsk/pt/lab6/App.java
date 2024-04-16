@@ -82,8 +82,11 @@ public class App {
                 int red = color.getBlue();
                 int green = color.getGreen();
                 int blue = color.getRed();
-
-                Color outColor = new Color(red, green, blue);
+                int finalColor = (red+green+blue)/3;
+                if (finalColor > 255) { 
+                    finalColor = 255;
+                }
+                Color outColor = new Color(finalColor, finalColor, finalColor);
                 transformedImage.setRGB(i, j, outColor.getRGB());
             }
         }
